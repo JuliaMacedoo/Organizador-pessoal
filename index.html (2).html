@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contagem Regressiva | Organizador Pessoal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- VARIÁVEIS E CONFIGURAÇÕES --- */
+        :root {
+            --bg-color: #f3f0f7;
+            --card-bg: #ffffff;
+            --text-primary: #2d2d2d;
+            --text-secondary: #666666;
+            --accent: #a29bfe; /* Lilás pastel */
+            --accent-hover: #8176ee;
+            --danger: #ff7675;
+            --border-radius: 16px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --font-main: 'Inter', sans-serif;
+            --font-tech: 'JetBrains Mono', monospace;
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a2e;
+            --card-bg: #25253a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #6c5ce7;
+            --accent-hover: #a29bfe;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s ease, color 0.3s ease; }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        button.btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        button.btn-primary:hover { background-color: var(--accent-hover); }
+
+        .theme-toggle {
+            background border: 1: none;
+           px solid var(--text-secondary);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* --- FILTROS --- */
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .filter-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* --- GRID DE EVENTOS --- */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .category-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .card-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-left: 8px;
+        }
+        
+        .card-actions button:hover { color: var(--danger); }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .card-date {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Contagem Regressiva */
+        .countdown {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.03);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: var(--font-tech);
+        }
+
+        .dark-mode .countdown { background: rgba(255,255,255,0.05); }
+
+        .time-unit {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-unit span:first-child {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .time-unit span:last-child {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .motivation-msg {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-align: center;
+            font-style: italic;
+            min-height: 20px;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+        }
+
+        .modal h2 { margin-bottom: 20px; font-size: 1.5rem; }
+
+        .form-group { margin-bottom: 15px; }
+        
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-secondary); }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel { background: transparent; border: 1px solid var(--text-secondary); color: var(--text-primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+        .btn-save { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+            .countdown { padding: 5px; }
+            .time-unit span:first-child { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Cada dia mais perto do que importa.</h1>
+        <div class="controls-top">
+            <button class="btn-primary" onclick="openModal()">+ Novo Evento</button>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Alternar Tema">🌗</button>
+        </div>
+    </header>
+
+    <!-- Filtros de Categoria -->
+    <div class="filters" id="filters">
+        <button class="filter-btn active" onclick="filterEvents('all')">Todos</button>
+        <button class="filter-btn" onclick="filterEvents('Meta')">Metas</button>
+        <button class="filter-btn" onclick="filterEvents('Prova')">Provas</button>
+        <button class="filter-btn" onclick="filterEvents('Viagem')">Viagens</button>
+        <button class="filter-btn" onclick="filterEvents('Aniversário')">Aniversário</button>
+    </div>
+
+    <!-- Grid de Cards -->
+    <div class="events-grid" id="eventsContainer">
+        <!-- Os cards serão inseridos aqui via JavaScript -->
+    </div>
+
+    <!-- Modal de Adicionar/Editar -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2 id="modalTitle">Adicionar Evento</h2>
+            <form id="eventForm">
+                <input type="hidden" id="eventId">
+                <div class="form-group">
+                    <label>Título do Evento</label>
+                    <input type="text" id="eventTitle" required placeholder="Ex: Formatura, Viagem...">
+                </div>
+                <div class="form-group">
+                    <label>Data e Hora</label>
+                    <input type="datetime-local" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="eventCategory">
+                        <option value="Meta">Meta</option>
+                        <option value="Prova">Prova/Escola</option>
+                        <option value="Viagem">Viagem</option>
+                        <option value="Aniversário">Aniversário</option>
+                        <option value="Pessoal">Pessoal</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- ESTADO E INICIALIZAÇÃO ---
+        let events = JSON.parse(localStorage.getItem('myEvents')) || [];
+        let currentFilter = 'all';
+
+        // Carregar tema
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Iniciar contagem
+        setInterval(updateCountdowns, 1000);
+        renderEvents();
+
+        // --- FUNÇÕES DE TEMAS ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light
