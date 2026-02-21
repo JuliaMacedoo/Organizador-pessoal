@@ -1,488 +1,164 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contagem Regressiva | Organizador Pessoal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* --- VARIÁVEIS E CONFIGURAÇÕES --- */
-        :root {
-            --bg-color: #f3f0f7;
-            --card-bg: #ffffff;
-            --text-primary: #2d2d2d;
-            --text-secondary: #666666;
-            --accent: #a29bfe; /* Lilás pastel */
-            --accent-hover: #8176ee;
-            --danger: #ff7675;
-            --border-radius: 16px;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            --font-main: 'Inter', sans-serif;
-            --font-tech: 'JetBrains Mono', monospace;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contagem Regressiva</title>
 
-        .dark-mode {
-            --bg-color: #1a1a2e;
-            --card-bg: #25253a;
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0a0a0;
-            --accent: #6c5ce7;
-            --accent-hover: #a29bfe;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
+<style>
+:root{
+  --bg:#f3f0f7;
+  --card:#ffffff;
+  --text:#2d2d2d;
+  --accent:#a29bfe;
+}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s ease, color 0.3s ease; }
-        
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
+body.dark{
+  --bg:#1a1a2e;
+  --card:#25253a;
+  --text:#e0e0e0;
+}
 
-        /* --- HEADER --- */
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            margin-top: 20px;
-            max-width: 600px;
-        }
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding:20px;
+}
 
-        h1 {
-            font-weight: 600;
-            font-size: 2rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, var(--text-primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+h1{
+  text-align:center;
+}
 
-        .controls-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
+.top{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin-bottom:20px;
+}
 
-        button.btn-primary {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        button.btn-primary:hover { background-color: var(--accent-hover); }
+button{
+  padding:8px 15px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  background:var(--accent);
+  color:white;
+}
 
-        .theme-toggle {
-            background border: 1: none;
-           px solid var(--text-secondary);
-            color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
+.grid{
+  display:grid;
+  gap:20px;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+}
 
-        /* --- FILTROS --- */
-        .filters {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
+.card{
+  background:var(--card);
+  padding:20px;
+  border-radius:15px;
+}
 
-        .filter-btn {
-            background: transparent;
-            border: 1px solid var(--text-secondary);
-            color: var(--text-secondary);
-            padding: 6px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .filter-btn.active {
-            background-color: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        /* --- GRID DE EVENTOS --- */
-        .events-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 15px;
-        }
-
-        .category-tag {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .card-actions button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-left: 8px;
-        }
-        
-        .card-actions button:hover { color: var(--danger); }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .card-date {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
-
-        /* Contagem Regressiva */
-        .countdown {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(0,0,0,0.03);
-            padding: 10px;
-            border-radius: 8px;
-            font-family: var(--font-tech);
-        }
-
-        .dark-mode .countdown { background: rgba(255,255,255,0.05); }
-
-        .time-unit {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .time-unit span:first-child {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .time-unit span:last-child {
-            font-size: 0.7rem;
-            opacity: 0.7;
-        }
-
-        .motivation-msg {
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: var(--accent);
-            text-align: center;
-            font-style: italic;
-            min-height: 20px;
-        }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--border-radius);
-            width: 90%;
-            max-width: 400px;
-            box-shadow: var(--shadow);
-        }
-
-        .modal h2 { margin-bottom: 20px; font-size: 1.5rem; }
-
-        .form-group { margin-bottom: 15px; }
-        
-        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-secondary); }
-        
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            background: var(--bg-color);
-            color: var(--text-primary);
-            font-family: var(--font-main);
-        }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn-cancel { background: transparent; border: 1px solid var(--text-secondary); color: var(--text-primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; }
-        .btn-save { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
-
-        /* Animações */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsivo */
-        @media (max-width: 600px) {
-            h1 { font-size: 1.5rem; }
-            .countdown { padding: 5px; }
-            .time-unit span:first-child { font-size: 0.9rem; }
-        }
-    </style>
+.count{
+  font-weight:bold;
+  margin-top:10px;
+}
+</style>
 </head>
+
 <body>
 
-    <header>
-        <h1>Cada dia mais perto do que importa.</h1>
-        <div class="controls-top">
-            <button class="btn-primary" onclick="openModal()">+ Novo Evento</button>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Alternar Tema">🌗</button>
-        </div>
-    </header>
+<h1>Cada dia mais perto do que importa.</h1>
 
-    <!-- Filtros de Categoria -->
-    <div class="filters" id="filters">
-        <button class="filter-btn active" onclick="filterEvents('all')">Todos</button>
-        <button class="filter-btn" onclick="filterEvents('Meta')">Metas</button>
-        <button class="filter-btn" onclick="filterEvents('Prova')">Provas</button>
-        <button class="filter-btn" onclick="filterEvents('Viagem')">Viagens</button>
-        <button class="filter-btn" onclick="filterEvents('Aniversário')">Aniversário</button>
-    </div>
+<div class="top">
+  <button id="newBtn">+ Novo Evento</button>
+  <button id="themeBtn">🌗</button>
+</div>
 
-    <!-- Grid de Cards -->
-    <div class="events-grid" id="eventsContainer">
-        <!-- Os cards serão inseridos aqui via JavaScript -->
-    </div>
+<div class="grid" id="grid"></div>
 
-    <!-- Modal de Adicionar/Editar -->
-    <div class="modal-overlay" id="modal">
-        <div class="modal">
-            <h2 id="modalTitle">Adicionar Evento</h2>
-            <form id="eventForm">
-                <input type="hidden" id="eventId">
-                <div class="form-group">
-                    <label>Título do Evento</label>
-                    <input type="text" id="eventTitle" required placeholder="Ex: Formatura, Viagem...">
-                </div>
-                <div class="form-group">
-                    <label>Data e Hora</label>
-                    <input type="datetime-local" id="eventDate" required>
-                </div>
-                <div class="form-group">
-                    <label>Categoria</label>
-                    <select id="eventCategory">
-                        <option value="Meta">Meta</option>
-                        <option value="Prova">Prova/Escola</option>
-                        <option value="Viagem">Viagem</option>
-                        <option value="Aniversário">Aniversário</option>
-                        <option value="Pessoal">Pessoal</option>
-                    </select>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn-save">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<script>
+let events = JSON.parse(localStorage.getItem("events")) || [];
 
-    <script>
-        // --- ESTADO E INICIALIZAÇÃO ---
-        let events = JSON.parse(localStorage.getItem('myEvents')) || [];
-        let currentFilter = 'all';
+const grid = document.getElementById("grid");
+const newBtn = document.getElementById("newBtn");
+const themeBtn = document.getElementById("themeBtn");
 
-        // Carregar tema
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
+newBtn.addEventListener("click", addEvent);
+themeBtn.addEventListener("click", toggleTheme);
 
-        // Iniciar contagem
-        setInterval(updateCountdowns, 1000);
-        renderEvents();
-
-        // --- FUNÇÕES DE TEMAS ---
-       function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+function toggleTheme(){
+  document.body.classList.toggle("dark");
 }
 
-// --- MODAL ---
-function openModal() {
-    document.getElementById('modal').style.display = 'flex';
+function addEvent(){
+  const title = prompt("Nome do evento:");
+  const date = prompt("Data (YYYY-MM-DD HH:MM):");
+  if(!title || !date) return;
+
+  events.push({
+    id: Date.now(),
+    title,
+    date
+  });
+
+  save();
+  render();
 }
 
-function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-    document.getElementById('eventForm').reset();
-    document.getElementById('eventId').value = '';
+function deleteEvent(id){
+  events = events.filter(e => e.id !== id);
+  save();
+  render();
 }
 
-// --- SALVAR EVENTO ---
-document.getElementById('eventForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+function save(){
+  localStorage.setItem("events", JSON.stringify(events));
+}
 
-    const id = document.getElementById('eventId').value;
-    const title = document.getElementById('eventTitle').value;
-    const date = document.getElementById('eventDate').value;
-    const category = document.getElementById('eventCategory').value;
+function render(){
+  grid.innerHTML = "";
 
-    if (id) {
-        // editar
-        events = events.map(ev =>
-            ev.id === id ? { ...ev, title, date, category } : ev
-        );
-    } else {
-        // novo
-        events.push({
-            id: Date.now().toString(),
-            title,
-            date,
-            category
-        });
+  events.forEach(event=>{
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <h3>${event.title}</h3>
+      <div>${event.date}</div>
+      <div class="count" id="c-${event.id}"></div>
+      <button onclick="deleteEvent(${event.id})">Excluir</button>
+    `;
+
+    grid.appendChild(div);
+  });
+}
+
+function updateCountdown(){
+  events.forEach(event=>{
+    const el = document.getElementById("c-"+event.id);
+    if(!el) return;
+
+    const diff = new Date(event.date) - new Date();
+
+    if(diff <= 0){
+      el.innerHTML = "Concluído 🎉";
+      return;
     }
 
-    localStorage.setItem('myEvents', JSON.stringify(events));
-    closeModal();
-    renderEvents();
-});
+    const days = Math.floor(diff/(1000*60*60*24));
+    const hours = Math.floor(diff/(1000*60*60)%24);
+    const minutes = Math.floor(diff/(1000*60)%60);
+    const seconds = Math.floor(diff/1000%60);
 
-// --- RENDERIZAR ---
-function renderEvents() {
-    const container = document.getElementById('eventsContainer');
-    container.innerHTML = '';
-
-    const filtered = currentFilter === 'all'
-        ? events
-        : events.filter(ev => ev.category === currentFilter);
-
-    filtered.forEach(event => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-            <div class="card-header">
-                <span class="category-tag">${event.category}</span>
-                <div class="card-actions">
-                    <button onclick="editEvent('${event.id}')">✏️</button>
-                    <button onclick="deleteEvent('${event.id}')">🗑</button>
-                </div>
-            </div>
-            <div class="card-title">${event.title}</div>
-            <div class="card-date">${new Date(event.date).toLocaleString()}</div>
-            <div class="countdown" id="count-${event.id}"></div>
-            <div class="motivation-msg" id="msg-${event.id}"></div>
-        `;
-        container.appendChild(card);
-    });
+    el.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  });
 }
 
-function editEvent(id) {
-    const event = events.find(ev => ev.id === id);
-    document.getElementById('eventId').value = event.id;
-    document.getElementById('eventTitle').value = event.title;
-    document.getElementById('eventDate').value = event.date;
-    document.getElementById('eventCategory').value = event.category;
-    openModal();
-}
+setInterval(updateCountdown,1000);
 
-function deleteEvent(id) {
-    events = events.filter(ev => ev.id !== id);
-    localStorage.setItem('myEvents', JSON.stringify(events));
-    renderEvents();
-}
+render();
+</script>
 
-// --- FILTRO ---
-function filterEvents(category) {
-    currentFilter = category;
-
-    document.querySelectorAll('.filter-btn').forEach(btn =>
-        btn.classList.remove('active')
-    );
-
-    event.target.classList.add('active');
-    renderEvents();
-}
-
-// --- CONTAGEM ---
-function updateCountdowns() {
-    events.forEach(event => {
-        const now = new Date().getTime();
-        const eventTime = new Date(event.date).getTime();
-        const diff = eventTime - now;
-
-        const container = document.getElementById(`count-${event.id}`);
-        const msg = document.getElementById(`msg-${event.id}`);
-
-        if (!container) return;
-
-        if (diff <= 0) {
-            container.innerHTML = "Concluído 🎉";
-            msg.innerHTML = "";
-            return;
-        }
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-
-        container.innerHTML = `
-            <div class="time-unit"><span>${days}</span><span>Dias</span></div>
-            <div class="time-unit"><span>${hours}</span><span>Horas</span></div>
-            <div class="time-unit"><span>${minutes}</span><span>Min</span></div>
-            <div class="time-unit"><span>${seconds}</span><span>Seg</span></div>
-        `;
-
-        if (days <= 3) {
-            msg.innerHTML = "Está chegando! 💜";
-        } else {
-            msg.innerHTML = "";
-        }
-    });
-}
+</body>
+</html>
