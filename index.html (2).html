@@ -347,7 +347,142 @@
         renderEvents();
 
         // --- FUNÇÕES DE TEMAS ---
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light
+       function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+// --- MODAL ---
+function openModal() {
+    document.getElementById('modal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('eventForm').reset();
+    document.getElementById('eventId').value = '';
+}
+
+// --- SALVAR EVENTO ---
+document.getElementById('eventForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const id = document.getElementById('eventId').value;
+    const title = document.getElementById('eventTitle').value;
+    const date = document.getElementById('eventDate').value;
+    const category = document.getElementById('eventCategory').value;
+
+    if (id) {
+        // editar
+        events = events.map(ev =>
+            ev.id === id ? { ...ev, title, date, category } : ev
+        );
+    } else {
+        // novo
+        events.push({
+            id: Date.now().toString(),
+            title,
+            date,
+            category
+        });
+    }
+
+    localStorage.setItem('myEvents', JSON.stringify(events));
+    closeModal();
+    renderEvents();
+});
+
+// --- RENDERIZAR ---
+function renderEvents() {
+    const container = document.getElementById('eventsContainer');
+    container.innerHTML = '';
+
+    const filtered = currentFilter === 'all'
+        ? events
+        : events.filter(ev => ev.category === currentFilter);
+
+    filtered.forEach(event => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <div class="card-header">
+                <span class="category-tag">${event.category}</span>
+                <div class="card-actions">
+                    <button onclick="editEvent('${event.id}')">✏️</button>
+                    <button onclick="deleteEvent('${event.id}')">🗑</button>
+                </div>
+            </div>
+            <div class="card-title">${event.title}</div>
+            <div class="card-date">${new Date(event.date).toLocaleString()}</div>
+            <div class="countdown" id="count-${event.id}"></div>
+            <div class="motivation-msg" id="msg-${event.id}"></div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function editEvent(id) {
+    const event = events.find(ev => ev.id === id);
+    document.getElementById('eventId').value = event.id;
+    document.getElementById('eventTitle').value = event.title;
+    document.getElementById('eventDate').value = event.date;
+    document.getElementById('eventCategory').value = event.category;
+    openModal();
+}
+
+function deleteEvent(id) {
+    events = events.filter(ev => ev.id !== id);
+    localStorage.setItem('myEvents', JSON.stringify(events));
+    renderEvents();
+}
+
+// --- FILTRO ---
+function filterEvents(category) {
+    currentFilter = category;
+
+    document.querySelectorAll('.filter-btn').forEach(btn =>
+        btn.classList.remove('active')
+    );
+
+    event.target.classList.add('active');
+    renderEvents();
+}
+
+// --- CONTAGEM ---
+function updateCountdowns() {
+    events.forEach(event => {
+        const now = new Date().getTime();
+        const eventTime = new Date(event.date).getTime();
+        const diff = eventTime - now;
+
+        const container = document.getElementById(`count-${event.id}`);
+        const msg = document.getElementById(`msg-${event.id}`);
+
+        if (!container) return;
+
+        if (diff <= 0) {
+            container.innerHTML = "Concluído 🎉";
+            msg.innerHTML = "";
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        container.innerHTML = `
+            <div class="time-unit"><span>${days}</span><span>Dias</span></div>
+            <div class="time-unit"><span>${hours}</span><span>Horas</span></div>
+            <div class="time-unit"><span>${minutes}</span><span>Min</span></div>
+            <div class="time-unit"><span>${seconds}</span><span>Seg</span></div>
+        `;
+
+        if (days <= 3) {
+            msg.innerHTML = "Está chegando! 💜";
+        } else {
+            msg.innerHTML = "";
+        }
+    });
+}
